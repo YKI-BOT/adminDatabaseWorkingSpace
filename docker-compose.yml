@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-cp31e40l5elc73afa9og-a.frankfurt-postgres.render.com/examprepbotdb?user=examprepbotdb_user&password=ZNKb0WXa2aXefjPes3urwExwUAcghPAs
+      SPRING_DATASOURCE_USERNAME: examprepbotdb_user
+      SPRING_DATASOURCE_PASSWORD: ZNKb0WXa2aXefjPes3urwExwUAcghPAs
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: jdbc:postgresql://dpg-cp31e40l5elc73afa9og-a.frankfurt-postgres.render.com/examprepbotdb?user=examprepbotdb_user&password=ZNKb0WXa2aXefjPes3urwExwUAcghPAs
+      POSTGRES_USER: examprepbotdb_user
+      POSTGRES_PASSWORD: ZNKb0WXa2aXefjPes3urwExwUAcghPAs
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
