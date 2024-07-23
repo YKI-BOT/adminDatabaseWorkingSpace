@@ -14,23 +14,23 @@ COPY frontend ./
 RUN npm run build
 
 # Stage 2: Build Spring Boot application
-FROM maven:3.6.3-openjdk-17 AS maven_build
+FROM openjdk:17-slim as maven_build
 
 WORKDIR /app
 
 # Copy the Spring Boot application code
 COPY . .
 
-# Build the Spring Boot application
+# Grant execution permission to the mvnw script
+RUN chmod +x ./mvnw
+
+# Package and build the Spring Boot application
 RUN ./mvnw clean package -DskipTests
 
 # Stage 3: Run the application
 FROM openjdk:17-slim
 
 WORKDIR /app
-
-# Copy the built React files to Spring Boot static directory
-COPY --from=build /app/build /src/main/resources/static
 
 # Copy the JAR file to the working directory
 COPY --from=maven_build /app/target/*.jar app.jar
