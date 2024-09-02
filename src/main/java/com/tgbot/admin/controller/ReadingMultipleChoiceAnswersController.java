@@ -71,4 +71,8 @@ public class ReadingMultipleChoiceAnswersController {
                 updatedAnswer.getQuestion().getId()
         );
     }
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        repository.deleteById(id);
+    }
 }
