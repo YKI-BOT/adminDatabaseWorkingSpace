@@ -3,6 +3,7 @@ package com.tgbot.admin.controller;
 import com.tgbot.admin.database.entity.ReadingMultipleChoiceAnswer;
 import com.tgbot.admin.database.entity.ReadingMultipleChoiceQuestion;
 import com.tgbot.admin.database.interfaces.ReadingMultipleChoiceAnswerRepository;
+import com.tgbot.admin.database.interfaces.ReadingMultipleChoiceQuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +15,13 @@ import java.util.stream.Collectors;
 public class ReadingMultipleChoiceAnswersController {
 
     private final ReadingMultipleChoiceAnswerRepository repository;
+    private final ReadingMultipleChoiceQuestionRepository questionRepository;
 
     @Autowired
-    public ReadingMultipleChoiceAnswersController(ReadingMultipleChoiceAnswerRepository repository) {
+    public ReadingMultipleChoiceAnswersController(ReadingMultipleChoiceAnswerRepository repository,
+                                                  ReadingMultipleChoiceQuestionRepository questionRepository) {
         this.repository = repository;
+        this.questionRepository = questionRepository;
     }
 
     @GetMapping
@@ -32,39 +36,39 @@ public class ReadingMultipleChoiceAnswersController {
                 .collect(Collectors.toList());
     }
 
-@PostMapping
-public ReadingMultipleChoiceAnswerDTO create(@RequestBody ReadingMultipleChoiceAnswerDTO answerDTO) {
-    ReadingMultipleChoiceQuestion question = questionRepository.findById(answerDTO.getQuestionId())
-            .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + answerDTO.getQuestionId()));
+    @PostMapping
+    public ReadingMultipleChoiceAnswerDTO create(@RequestBody ReadingMultipleChoiceAnswerDTO answerDTO) {
+        ReadingMultipleChoiceQuestion question = questionRepository.findById(answerDTO.getQuestionId())
+                .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + answerDTO.getQuestionId()));
 
-    ReadingMultipleChoiceAnswer answer = new ReadingMultipleChoiceAnswer();
-    answer.setText(answerDTO.getText());
-    answer.setQuestion(question);
+        ReadingMultipleChoiceAnswer answer = new ReadingMultipleChoiceAnswer();
+        answer.setText(answerDTO.getText());
+        answer.setQuestion(question);
 
-    ReadingMultipleChoiceAnswer savedAnswer = repository.save(answer);
-    return new ReadingMultipleChoiceAnswerDTO(
-            savedAnswer.getId(),
-            savedAnswer.getText(),
-            savedAnswer.getQuestion().getId()
-    );
-}
+        ReadingMultipleChoiceAnswer savedAnswer = repository.save(answer);
+        return new ReadingMultipleChoiceAnswerDTO(
+                savedAnswer.getId(),
+                savedAnswer.getText(),
+                savedAnswer.getQuestion().getId()
+        );
+    }
 
-@PutMapping("/{id}")
-public ReadingMultipleChoiceAnswerDTO update(@PathVariable Long id, @RequestBody ReadingMultipleChoiceAnswerDTO answerDTO) {
-    ReadingMultipleChoiceAnswer answer = repository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Answer not found with id: " + id));
+    @PutMapping("/{id}")
+    public ReadingMultipleChoiceAnswerDTO update(@PathVariable Long id, @RequestBody ReadingMultipleChoiceAnswerDTO answerDTO) {
+        ReadingMultipleChoiceAnswer answer = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Answer not found with id: " + id));
 
-    ReadingMultipleChoiceQuestion question = questionRepository.findById(answerDTO.getQuestionId())
-            .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + answerDTO.getQuestionId()));
+        ReadingMultipleChoiceQuestion question = questionRepository.findById(answerDTO.getQuestionId())
+                .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + answerDTO.getQuestionId()));
 
-    answer.setText(answerDTO.getText());
-    answer.setQuestion(question);
+        answer.setText(answerDTO.getText());
+        answer.setQuestion(question);
 
-    ReadingMultipleChoiceAnswer updatedAnswer = repository.save(answer);
-    return new ReadingMultipleChoiceAnswerDTO(
-            updatedAnswer.getId(),
-            updatedAnswer.getText(),
-            updatedAnswer.getQuestion().getId()
-    );
-}
+        ReadingMultipleChoiceAnswer updatedAnswer = repository.save(answer);
+        return new ReadingMultipleChoiceAnswerDTO(
+                updatedAnswer.getId(),
+                updatedAnswer.getText(),
+                updatedAnswer.getQuestion().getId()
+        );
+    }
 }
